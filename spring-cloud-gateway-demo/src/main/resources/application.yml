@@ -1,0 +1,33 @@
+server:
+  port: 80
+
+spring:
+  application:
+    name: spring-cloud-gateway-demo
+  cloud:
+    loadbalancer:
+      retry:
+        enabled: true
+        max-retries-on-next-service-instance: 1
+        max-retries-on-same-service-instance: 1
+        avoid-previous-instance: false
+        retryable-status-codes: 500, 501, 502, 503
+        retry-on-all-operations: true
+    gateway:
+      httpclient:
+        response-timeout: 3s
+        connect-timeout: 2000
+      default-filters:
+        - StripPrefix=1
+      routes:
+        - id: spring-webflux-demo
+          uri: lb://webflux-demo
+          predicates:
+            - "Path=/webflux-demo/**"
+    discovery:
+      client:
+        simple:
+          instances:
+            webflux-demo:
+              - uri: http://localhost:8080
+              - uri: http://localhost:8081
